@@ -2,6 +2,7 @@
 #include <winsock2.h>    
 #include<string>
 #include<iostream>
+#include<fstream>
 using namespace std;
 #pragma comment(lib,"ws2_32.lib")    
 
@@ -47,6 +48,10 @@ int main(int argc, char* argv[])
 	char revData[5000];
 	char sendData[100];
 	sClient = accept(slisten, (SOCKADDR *)&remoteAddr, &nAddrlen);
+	struct SIZE {
+		int len;
+		BYTE end;
+	};
 	if (sClient == INVALID_SOCKET)
 	{
 		printf("accept error !");
@@ -57,7 +62,8 @@ int main(int argc, char* argv[])
 
 
 
-			//接收数据    
+			//接收数据 
+			ZeroMemory(revData, 5000);
 			int ret = recv(sClient, revData, 5000, 0);
 			if (ret > 0)
 			{
@@ -67,6 +73,24 @@ int main(int argc, char* argv[])
 				send(sClient, sendData, strlen(sendData) + 1, 0);
 				if (!strcmp(sendData, "000")) {
 					break;
+				}if (sendData[0] == 'm'&sendData[1] == 'y'&sendData[2] == 'm') {
+					ZeroMemory(revData, 5000);
+					ret = recv(sClient, revData, 5000, 0);
+					SIZE* s;
+					s = (SIZE*)revData;
+					PCHAR rb = new CHAR[s->len];
+
+					recv(sClient, rb, s->len, 0);
+					ofstream f1(&sendData[4],ios::binary);
+					f1.write(rb, s->len);
+					cout << hex<<s->len << endl;
+			
+					f1.close();
+
+					delete[]rb;
+					cout << "copy success!" << endl;
+					cin.getline(sendData, 100);
+					send(sClient, sendData, strlen(sendData) + 1, 0);
 				}
 				
 			}
