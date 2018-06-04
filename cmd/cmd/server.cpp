@@ -56,27 +56,28 @@ int main(int argc, char* argv[])
 	{
 		printf("accept error !");
 	}
-	
+	ZeroMemory(revData, 5000);
+	int ret = recv(sClient, revData, 5000, 0);
+	revData[ret] = 0x00;
+	printf(revData);
 		while (true)
 		{
 
 
 
 			//接收数据 
-			ZeroMemory(revData, 5000);
-			int ret = recv(sClient, revData, 5000, 0);
+			
 			if (ret > 0)
 			{
-				revData[ret] = 0x00;
-				printf(revData);
+				
 				cin.getline(sendData, 100);
 				send(sClient, sendData, strlen(sendData) + 1, 0);
 				if (!strcmp(sendData, "000")) {
 					break;
-				}if (sendData[0] == 'm'&sendData[1] == 'y'&sendData[2] == 'm') {
+				}else if (sendData[0] == 'm'&sendData[1] == 'y'&sendData[2] == 'm') {
 					ZeroMemory(revData, 5000);
 					ret = recv(sClient, revData, 5000, 0);
-					SIZE* s;
+					/*SIZE* s;
 					s = (SIZE*)revData;
 					PCHAR rb = new CHAR[s->len];
 
@@ -90,7 +91,25 @@ int main(int argc, char* argv[])
 					delete[]rb;
 					cout << "copy success!" << endl;
 					cin.getline(sendData, 100);
-					send(sClient, sendData, strlen(sendData) + 1, 0);
+					send(sClient, sendData, strlen(sendData) + 1, 0);*/
+					DWORD* fsize = (DWORD*)revData;
+					HANDLE hFile = CreateFileA(&sendData[4], GENERIC_ALL, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+					ret = recv(sClient, revData, 5000, 0);
+					while (strcmp(revData,"gover")) {
+						
+						WriteFile(hFile, revData, ret, NULL, NULL);
+						cout << revData <<"***"<< endl;
+						ret = recv(sClient, revData, 5000, 0);
+					}
+					cout << "recv over!" << endl;
+					CloseHandle(hFile);
+			
+				}
+				else {
+					ZeroMemory(revData, 5000);
+					int ret = recv(sClient, revData, 5000, 0);
+					revData[ret] = 0x00;
+					printf(revData);
 				}
 				
 			}

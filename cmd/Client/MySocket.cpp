@@ -49,27 +49,43 @@ bool MySocket::SocketRecv(string & recvbuf) {
 	return true;
 }
 bool MySocket::SocketSendF(string &filename) {
-	ifstream f1;
-	f1.open(filename,ios::binary|ios::in);
-	struct SIZE {
-		int len;
-		BYTE end;
-	};
-	SIZE s = {0,0};
-	f1.seekg(0, ios::end);
-	int axx=0;
-	s.len= f1.tellg();
-	s.len++;
-	s.end = '\0';
-	cout << s.len << endl;
-	cout << s.end << endl;
-	f1.seekg(0, ios::beg);
-	PCHAR buffer = new CHAR[s.len];
-	f1.read(buffer, s.len);
-	f1.close();
-	
-	send(sockClient, (CHAR*)&s, sizeof SIZE, 0);
-	send(sockClient, buffer, s.len, 0);
-	delete[]buffer;
+	//ifstream f1;
+	//f1.open(filename,ios::binary|ios::in);
+	//struct SIZE {
+	//	int len;
+	//	BYTE end;
+	//};
+	//SIZE s = {0,0};
+	//f1.seekg(0, ios::end);
+	//int axx=0;
+	//s.len= f1.tellg();
+	//s.len++;
+	//s.end = '\0';
+	//cout << s.len << endl;
+	//cout << s.end << endl;
+	//f1.seekg(0, ios::beg);
+	//PCHAR buffer = new CHAR[s.len];
+	//f1.read(buffer, s.len);
+	//f1.close();
+	//
+	//send(sockClient, (CHAR*)&s, sizeof SIZE, 0);
+	//send(sockClient, buffer, s.len, 0);
+	//delete[]buffer;
+	//return true;
+	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);//以共享读写的方式打开
+	CHAR buffer[5000] = { 0 };//每次发送的大小，取500字节
+	DWORD fsize = GetFileSize(hFile, NULL);
+	cout << fsize << endl;
+	send(sockClient, (char *)&fsize, sizeof DWORD, 0);
+	DWORD k = 0,r=0;
+	while (k < fsize) {
+		ReadFile(hFile, buffer, 5000, &r, NULL);
+		k += r;
+		send(sockClient, buffer, r, 0);
+		cout << buffer << "***"<<endl;
+	}
+	send(sockClient, "gover\0", 6, 0);
+	cout << "Send over!" << endl;
+	CloseHandle(hFile);
 	return true;
 }
