@@ -14,6 +14,7 @@ public:
 	bool SocketSend(const string sendbuf) const;
 	bool SocketRecv(string & recvbuf);
 	bool SocketSendF(string &filename);
+	bool SocketRecvF(string &filename);
 private:
 	SOCKET sockClient;
 	SOCKADDR_IN addrClient;

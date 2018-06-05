@@ -92,15 +92,25 @@ int main(int argc, char* argv[])
 					cout << "copy success!" << endl;
 					cin.getline(sendData, 100);
 					send(sClient, sendData, strlen(sendData) + 1, 0);*/
-					DWORD* fsize = (DWORD*)revData;
+					DWORD fsize = *(DWORD*)revData;
+					DWORD recved = ret-sizeof DWORD;
+					
 					HANDLE hFile = CreateFileA(&sendData[4], GENERIC_ALL, NULL, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-					ret = recv(sClient, revData, 5000, 0);
+					WriteFile(hFile, &revData[4], recved, NULL, NULL);
+					while (recved < (fsize)) {
+						cout << recved << "\t" << fsize << endl;
+						ret = recv(sClient, revData, 5000, 0);
+						recved += ret;
+						WriteFile(hFile, revData, ret, NULL, NULL);
+					}
+	
+					/*ret = recv(sClient, revData, 5000, 0);
 					while (strcmp(revData,"gover")) {
 						
 						WriteFile(hFile, revData, ret, NULL, NULL);
 						cout << revData <<"***"<< endl;
 						ret = recv(sClient, revData, 5000, 0);
-					}
+					}*/
 					cout << "recv over!" << endl;
 					CloseHandle(hFile);
 			

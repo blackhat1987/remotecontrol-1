@@ -4,13 +4,13 @@
 #include<string>
 #include<iostream>
 #include"Shell.h"
-/*int _stdcall WinMain(
+int _stdcall WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine,
 	int nCmdShow
-	)*/ 
-int main(){
+	) 
+/*int main()*/{
 	MySocket s1;
 	s1.SocketInit("10.59.13.192", 8888,false);
 	string test;
